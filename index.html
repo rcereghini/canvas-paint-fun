@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>Canvas Draw</title>
+		<style>
+			.hide {
+				display: none;
+			}
+		</style>
+	</head>
+	<body>
+		<div style="display: flex;">
+			<canvas id="easle" width="800" height="800" style="border: 1px solid #ddd;"></canvas>
+			<img id="canvasImg" class="hide" style="border: 1px solid #ddd;" alt="Right Click to Save" />
+			<div style="margin-left: .5em;">
+				<label>
+					Size:
+					<input type="range" min="1" max="100" id="sizeSlider" />
+					<p id="sizeDisplay" style="text-align: center;"></p>
+				</label>
+				<label>
+					Color:
+					<input type="color" id="colorPicker" />
+					<p id="colorDisplay" style="text-align: center;"></p>
+				</label>
+				<button id="saveButton">Save</button>
+			</div>
+		</div>
+		<script>
+			const DEFAULT_SIZE = 50;
+			const DEFAULT_COLOR = "#1080ca";
+
+			const canvas = document.querySelector("#easle");
+			const sizeSlider = document.querySelector("#sizeSlider");
+			const sizeDisplay = document.querySelector("#sizeDisplay");
+			const colorPicker = document.querySelector("#colorPicker");
+			const colorDisplay = document.querySelector("#colorDisplay");
+			const saveButton = document.querySelector("#saveButton");
+			const context = canvas.getContext("2d");
+
+			sizeDisplay.innerHTML = DEFAULT_SIZE;
+			sizeSlider.value = DEFAULT_SIZE;
+			colorDisplay.innerHTML = DEFAULT_COLOR;
+			colorPicker.value = DEFAULT_COLOR;
+
+			context.strokeStyle = DEFAULT_COLOR;
+			context.lineJoin = "round";
+			context.lineCap = "round";
+			context.lineWidth = DEFAULT_SIZE;
+
+			let isDrawing = false;
+			let lastX = 0;
+			let lastY = 0;
+
+			function draw(e) {
+				if (!isDrawing) return;
+				context.beginPath();
+				context.moveTo(lastX, lastY);
+				context.lineTo(e.offsetX, e.offsetY);
+				context.stroke();
+				[lastX, lastY] = [e.offsetX, e.offsetY];
+			}
+
+			function changeLineWidth(e) {
+				context.lineWidth = e.target.value;
+				sizeDisplay.innerHTML = e.target.value;
+			}
+
+			function changeColor(e) {
+				context.strokeStyle = e.target.value;
+				colorDisplay.innerHTML = e.target.value;
+			}
+
+			function saveImage() {
+				canvas.classList.toggle("hide");
+				canvasImg.classList.toggle("hide");
+				let dataURL = canvas.toDataURL();
+				document.querySelector("#canvasImg").src = dataURL;
+			}
+
+			canvas.addEventListener("mousemove", draw);
+			canvas.addEventListener("mousedown", e => {
+				isDrawing = true;
+				[lastX, lastY] = [e.offsetX, e.offsetY];
+			});
+			canvas.addEventListener("mouseup", () => (isDrawing = false));
+			canvas.addEventListener("mouseout", () => (isDrawing = false));
+			sizeSlider.addEventListener("input", changeLineWidth);
+			colorPicker.addEventListener("input", changeColor);
+			saveButton.addEventListener("click", saveImage);
+		</script>
+	</body>
+</html>
