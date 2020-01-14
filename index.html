@@ -74,11 +74,29 @@
 				colorDisplay.innerHTML = e.target.value;
 			}
 
+			function download(filename, img) {
+				var element = document.createElement("a");
+				element.setAttribute("href", img.src);
+				element.setAttribute("download", filename);
+
+				element.style.display = "none";
+				document.body.appendChild(element);
+
+				element.click();
+
+				document.body.removeChild(element);
+			}
+
 			function saveImage() {
 				canvas.classList.toggle("hide");
 				canvasImg.classList.toggle("hide");
 				let dataURL = canvas.toDataURL();
 				document.querySelector("#canvasImg").src = dataURL;
+
+				var img = document.querySelector("#canvasImg");
+				var filename = "img.png";
+
+				download(filename, img);
 			}
 
 			canvas.addEventListener("mousemove", draw);
